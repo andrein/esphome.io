@@ -198,6 +198,8 @@ Like `throttle`, but the listed values are always let through at once.
 - **value** (*Optional*, string or list of strings): The values that are let through at once. Without any, this works
   like `throttle`.
 
+The short form `- throttle_with_priority: 1s` sets only the time, so it works like `throttle`.
+
 ### `timeout`
 
 Lets every value through, and sends a value again once no new one has come for the given time period.
@@ -215,6 +217,8 @@ Lets every value through, and sends a value again once no new one has come for t
 - **timeout** (**Required**, [Time](/guides/configuration-types/#time)): How long to wait for a new value.
 - **value** (*Optional*, string): The text to send when the time runs out, or `last` to send the last value again.
   Defaults to `last`. Because `last` is a keyword, the timeout cannot send the literal text "last".
+
+The short form `- timeout: 1s` sends the last value again after 1s.
 
 Put `timeout` before `throttle_with_priority` so the last value before a pause still gets through the throttle:
 
