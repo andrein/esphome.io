@@ -7,7 +7,7 @@ This component contains platform-specific options for the [LibreTiny](https://do
 It provides support for the following microcontrollers, commonly used in Tuya devices, amongst others:
 
 - **BK72xx**: BK7231T, BK7231N, BK7238
-- **RTL87xx**: RTL8710BN, RTL8710BX, RTL8720CF
+- **RTL87xx**: RTL8710BN, RTL8710BX, RTL8720CF, RTL8720CM
 - **LN882x**: LN882H
 
 Since different microcontrollers are supported, you need to include the appropriate ESPHome component,
@@ -237,7 +237,8 @@ client that connects over the API or MQTT, and the ESPHome CLI decodes the addre
 [E][libretiny.crash]:   BT1: 0x0001D305  (stack backtrace)
 ```
 
-On RTL8720C the report adds the fault status register and the faulting address:
+On RTL8720C the report adds the fault status register and the faulting address. `Address` is only recorded for
+bus and memory management faults and reads `0x00000000` otherwise, as in this usage fault:
 
 ```log
 [E][libretiny.crash]: *** CRASH DETECTED ON PREVIOUS BOOT ***
