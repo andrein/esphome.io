@@ -218,10 +218,10 @@ bk72xx:
 
 On BK7238, BK7231N, RTL8710B, RTL8720C and LN882H, ESPHome captures crash data from the previous boot and logs
 it on startup, the same way it does on ESP32, ESP8266 and RP2040. On BK7238 and BK7231N it covers the chip's
-three fault traps: undefined instruction, prefetch abort and data abort. On RTL8710B, RTL8720C and LN882H it
-covers the hard fault, bus fault, usage fault and memory management fault (and the secure fault on RTL8720C),
-and the report also shows the fault status register (`CFSR`) and, when the chip recorded one, the address that
-faulted.
+three fault traps: undefined instruction, prefetch abort and data abort. On RTL8720C and LN882H it covers the
+hard fault, bus fault, usage fault and memory management fault (and the secure fault on RTL8720C). RTL8710B
+reports every fault as a hard fault. On all three the report also shows the fault status register (`CFSR`),
+which gives the cause, and, when the chip recorded one, the address that faulted.
 
 When a crash occurs, the fault PC, the return address and up to 8 stack-scanned return addresses are
 preserved across the reboot and logged at the `ERROR` level. The report is also replayed to the next log
@@ -249,8 +249,6 @@ is only recorded for bus and memory management faults and reads `0x00000000` oth
 [E][libretiny.crash]:   LR:  0x9B0073A5  (return address)
 [E][libretiny.crash]:   BT0: 0x9B007301  (stack backtrace)
 ```
-
-RTL8710B reports every fault as a hard fault; the fault status register still shows the cause.
 
 The crash handler also makes the device restart after a crash and report it: within a second on BK72xx and
 RTL8720C, within about 1.5 seconds on RTL8710B, and within a few seconds on LN882H. Without it, a BK72xx
