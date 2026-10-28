@@ -73,18 +73,10 @@ jobs:
             const labels = new Set();
 
             // Strategy: Branch-based labeling
-            let pr;
-            if (context.eventName === 'workflow_dispatch') {
-              // Get PR details when called via workflow_dispatch
-              ({ data: pr } = await github.rest.pulls.get({
-                owner,
-                repo,
-                pull_number: pr_number
-              }));
-            } else {
-              // Use context when called via pull_request_target
-              pr = context.payload.pull_request;
-            }
+            // workflow_dispatch has no PR in its payload, so fetch it
+            const pr = context.eventName === 'workflow_dispatch'
+              ? (await github.rest.pulls.get({ owner, repo, pull_number: pr_number })).data
+              : context.payload.pull_request;
             const baseRef = pr.base.ref;
             const prBody = pr.body || '';
 
@@ -97,7 +89,6 @@ jobs:
             }
 
             // Strategy: Parent PR detection
-            // prBody is already set above based on event type
 
             // Look for ESPHome PR links in PR body
             // Patterns to match:
@@ -216,8 +207,7 @@ jobs:
               }
             }
 
-            // Strategy: Warn once when maintainers cannot push to the PR branch,
-            // like the auto-label workflow in esphome/esphome
+            // Strategy: Warn once when maintainers cannot push to the PR branch
             if (pr.head.repo && pr.head.repo.full_name !== pr.base.repo.full_name && !pr.maintainer_can_modify) {
               const MAINTAINER_ACCESS_MARKER = '<!-- maintainer-access-warning -->';
               let existingComment;
@@ -226,7 +216,7 @@ jobs:
                 { owner, repo, issue_number: pr_number }
               )) {
                 existingComment = comments.find(comment =>
-                  comment.user.type === 'Bot' &&
+                  comment.user.login === process.env.BOT_NAME &&
                   comment.body && comment.body.includes(MAINTAINER_ACCESS_MARKER)
                 );
                 if (existingComment) {
@@ -244,7 +234,8 @@ jobs:
                     `It looks like this PR was submitted from a fork owned by the **${pr.head.repo.owner.login}** organization. ` +
                     `GitHub does not allow maintainers to push changes to pull request branches when the fork is owned by an organization. ` +
                     `This means we won't be able to make small adjustments or fixups to your PR directly.\n\n` +
-                    `To allow maintainer collaboration, please re-submit this PR from a personal fork instead.`
+                    `To allow maintainer collaboration, please re-submit this PR from a personal fork instead. ` +
+                    `The "Edit page" link on the docs site forks to your personal account.`
                   : `${MAINTAINER_ACCESS_MARKER}\n### ⚠️ Maintainer Access Disabled\n\n` +
                     `Hey there @${prAuthor},\n` +
                     `It looks like this PR does not have the "Allow edits from maintainers" option enabled. ` +
