@@ -136,7 +136,8 @@ climate:
 
   - `MEMORY` (default): Restore the last mode, target temperature and preset. If nothing was saved,
     apply `default_preset`.
-  - `DEFAULT_PRESET`: Always apply `default_preset` and ignore the saved state. Requires
+  - `DEFAULT_PRESET`: Always apply `default_preset` and ignore the saved state, including the mode:
+    the controller starts in heat, cool or heat/cool mode as without a saved state. Requires
     `default_preset`.
 
 - **preset_change** (*Optional*, [Action](/automations/actions#all-actions)): Actions to run after
